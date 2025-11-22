@@ -94,6 +94,12 @@ python controller.py status
 # Set interval to 60 seconds
 python controller.py interval 60
 
+# Disable LED actions (quiet mode)
+python controller.py quiet on
+
+# Enable LED actions
+python controller.py quiet off
+
 # Interactive monitor mode
 python controller.py monitor
 ```
@@ -112,6 +118,8 @@ python controller.py monitor
 - `toggle` or `t` - Toggle state
 - `status` or `s` - Check current status
 - `i <seconds>` - Set interval (e.g., `i 45`)
+- `qon` - Enable quiet mode (disable all LED actions)
+- `qoff` - Disable quiet mode (enable LED actions)
 - `quit` or `q` - Exit monitor
 
 ### Manual Port Selection
@@ -127,6 +135,25 @@ python controller.py --port /dev/ttyACM0 monitor
 ```
 
 ## 🔧 Configuration
+
+### Quiet Mode
+
+Quiet mode disables all LED actions while keeping the keep-awake functionality fully operational. This is useful when:
+- You want the device to work silently without visual distractions
+- Using the device in a dark environment
+- Conserving power or reducing LED wear
+
+Enable quiet mode:
+```bash
+python controller.py quiet on
+```
+
+Disable quiet mode:
+```bash
+python controller.py quiet off
+```
+
+In quiet mode, all LEDs will turn off and remain off, but the device continues to prevent your laptop from sleeping.
 
 ### Changing Default Settings
 

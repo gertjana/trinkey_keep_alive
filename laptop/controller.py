@@ -8,6 +8,8 @@ Usage:
     python controller.py toggle      # Toggle on/off
     python controller.py status      # Check current status
     python controller.py interval 45 # Set interval to 45 seconds
+    python controller.py quiet on    # Disable LED actions
+    python controller.py quiet off   # Enable LED actions
     python controller.py monitor     # Interactive monitor mode
 
 Requirements:
@@ -64,6 +66,8 @@ def monitor_mode(ser):
     print("  t or 'toggle' - Toggle on/off")
     print("  s or 'status' - Check status")
     print("  i or 'interval' - Set interval (e.g., 'i 45')")
+    print("  qon          - Enable quiet mode (disable LEDs)")
+    print("  qoff         - Disable quiet mode (enable LEDs)")
     print("  q or 'quit'   - Exit monitor")
     print("="*50 + "\n")
     
@@ -110,6 +114,14 @@ def monitor_mode(ser):
                         print("✗ Invalid interval value")
                 else:
                     print("Usage: i <seconds>  (e.g., 'i 45')")
+            elif user_input == 'qon':
+                response = send_command(ser, 'quiet on')
+                if response and response.startswith('QUIET:'):
+                    print("✓ Quiet mode ENABLED (LEDs off)")
+            elif user_input == 'qoff':
+                response = send_command(ser, 'quiet off')
+                if response and response.startswith('QUIET:'):
+                    print("✓ Quiet mode DISABLED (LEDs on)")
             elif user_input:
                 print("Unknown command. Type 'q' to quit.")
             
@@ -121,9 +133,9 @@ def monitor_mode(ser):
 
 def main():
     parser = argparse.ArgumentParser(description='Control Neo Trinkey Keep-Awake Device')
-    parser.add_argument('command', nargs='?', choices=['on', 'off', 'toggle', 'status', 'interval', 'monitor'],
+    parser.add_argument('command', nargs='?', choices=['on', 'off', 'toggle', 'status', 'interval', 'quiet', 'monitor'],
                       help='Command to send to device')
-    parser.add_argument('value', nargs='?', type=int, help='Value for interval command')
+    parser.add_argument('value', nargs='?', help='Value for interval command or on/off for quiet command')
     parser.add_argument('--port', help='Specify serial port manually')
     
     args = parser.parse_args()
@@ -150,11 +162,23 @@ def main():
             monitor_mode(ser)
         elif args.command == 'interval':
             if args.value:
-                response = send_command(ser, f'interval:{args.value}')
-                print(response if response else "Command sent")
+                try:
+                    interval_val = int(args.value)
+                    response = send_command(ser, f'interval:{interval_val}')
+                    print(response if response else "Command sent")
+                except ValueError:
+                    print("Error: interval value must be a number")
             else:
                 print("Error: interval command requires a value")
                 print("Usage: python controller.py interval 45")
+        elif args.command == 'quiet':
+            if args.value in ['on', 'off']:
+                response = send_command(ser, f'quiet {args.value}')
+                print(response if response else "Command sent")
+            else:
+                print("Error: quiet command requires 'on' or 'off'")
+                print("Usage: python controller.py quiet on")
+                print("       python controller.py quiet off")
         else:
             response = send_command(ser, args.command)
             print(response if response else "Command sent")

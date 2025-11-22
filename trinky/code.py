@@ -18,6 +18,7 @@ mouse = Mouse(usb_hid.devices)
 
 # Status
 active = False
+quiet_mode = False  # When True, disable all LED actions
 last_action_time = time.monotonic()
 ACTION_INTERVAL = 30  # seconds between actions
 
@@ -29,15 +30,17 @@ COLOR_ACTION = (255, 255, 0)  # Yellow flash during action
 
 def set_status(color):
     """Set all NeoPixels to a color"""
-    pixels.fill(color)
-    pixels.show()
+    if not quiet_mode:
+        pixels.fill(color)
+        pixels.show()
 
 def flash_status(color, duration=0.1):
     """Flash NeoPixels briefly"""
-    pixels.fill(color)
-    pixels.show()
-    time.sleep(duration)
-    set_status(COLOR_ACTIVE if active else COLOR_IDLE)
+    if not quiet_mode:
+        pixels.fill(color)
+        pixels.show()
+        time.sleep(duration)
+        set_status(COLOR_ACTIVE if active else COLOR_IDLE)
 
 def keep_awake_action():
     """Perform a random keep-awake action"""
@@ -62,7 +65,7 @@ def keep_awake_action():
 
 def process_command(command):
     """Process commands from laptop"""
-    global active, ACTION_INTERVAL
+    global active, ACTION_INTERVAL, quiet_mode
     
     command = command.strip().lower()
     
@@ -82,6 +85,15 @@ def process_command(command):
     elif command == 'status':
         status = 'ACTIVE' if active else 'IDLE'
         usb_cdc.data.write(f'STATUS:{status}\n'.encode())
+    elif command == 'quiet on':
+        quiet_mode = True
+        pixels.fill(COLOR_OFF)
+        pixels.show()
+        usb_cdc.data.write(b'QUIET:ON\n')
+    elif command == 'quiet off':
+        quiet_mode = False
+        set_status(COLOR_ACTIVE if active else COLOR_IDLE)
+        usb_cdc.data.write(b'QUIET:OFF\n')
     elif command.startswith('interval:'):
         try:
             new_interval = int(command.split(':')[1])
@@ -95,7 +107,7 @@ def process_command(command):
 set_status(COLOR_IDLE)
 
 print("Neo Trinkey Keep-Awake Device Ready")
-print("Commands: on, off, toggle, status, interval:30")
+print("Commands: on, off, toggle, status, interval:30, quiet on, quiet off")
 
 # Main loop
 while True:

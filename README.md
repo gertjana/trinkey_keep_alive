@@ -17,10 +17,10 @@ A USB device that prevents your laptop from going to sleep or showing a screensa
 
 ## 🎨 Status Colors
 
-| Color | Status |
-|-------|--------|
-| 🔵 Blue | Idle/Ready (device off) |
-| 🟢 Green | Active (keeping laptop awake) |
+| Color     | Status                              |
+| --------- | ----------------------------------- |
+| 🔵 Blue   | Idle/Ready (device off)             |
+| 🟢 Green  | Active (keeping laptop awake)       |
 | 🟡 Yellow | Action flash (key press/mouse move) |
 
 ## 📋 Hardware Requirements
@@ -32,10 +32,12 @@ A USB device that prevents your laptop from going to sleep or showing a screensa
 ## 🛠️ Software Requirements
 
 ### Neo Trinkey
+
 - CircuitPython 8.0 or newer
 - Adafruit HID library
 
 ### Laptop
+
 - Python 3.7+
 - pyserial library
 
@@ -44,16 +46,19 @@ A USB device that prevents your laptop from going to sleep or showing a screensa
 ### 1. Set Up the Neo Trinkey
 
 1. **Install CircuitPython** on your Neo Trinkey:
+
    - Download CircuitPython for Neo Trinkey from [circuitpython.org](https://circuitpython.org/board/neo_trinkey_m0/)
    - Enter bootloader mode (double-press reset button)
    - Drag the .UF2 file to the TRINKETBOOT drive
    - Device will reboot and appear as CIRCUITPY drive
 
 2. **Install required libraries**:
+
    - Download the [Adafruit CircuitPython Library Bundle](https://circuitpython.org/libraries)
    - Copy the `adafruit_hid` folder to `CIRCUITPY/lib/`
 
 3. **Upload the device code**:
+
    - Copy `trinkey/code.py` to the root of the CIRCUITPY drive
    - The device will automatically restart
 
@@ -64,11 +69,13 @@ A USB device that prevents your laptop from going to sleep or showing a screensa
 ### 2. Set Up Laptop Controller
 
 1. **Install Python dependencies**:
+
 ```bash
 pip install pyserial
 ```
 
 2. **Run the controller**:
+
 ```bash
 cd laptop
 python controller.py monitor
@@ -113,6 +120,7 @@ python controller.py monitor
 ```
 
 **Monitor Commands:**
+
 - `on` or `1` - Activate keep-awake
 - `off` or `0` - Deactivate keep-awake
 - `toggle` or `t` - Toggle state
@@ -139,16 +147,19 @@ python controller.py --port /dev/ttyACM0 monitor
 ### Quiet Mode
 
 Quiet mode disables all LED actions while keeping the keep-awake functionality fully operational. This is useful when:
+
 - You want the device to work silently without visual distractions
 - Using the device in a dark environment
 - Conserving power or reducing LED wear
 
 Enable quiet mode:
+
 ```bash
 python controller.py quiet on
 ```
 
 Disable quiet mode:
+
 ```bash
 python controller.py quiet off
 ```
@@ -171,6 +182,7 @@ COLOR_ACTION = (255, 255, 0) # Yellow
 ### Keep-Awake Actions
 
 The device randomly performs one of these actions:
+
 1. Press F15 key (rarely used, non-intrusive)
 2. Move mouse 1 pixel right and back
 3. Move mouse 1 pixel down and back
@@ -195,23 +207,27 @@ neo-trinkey-keepawake/
 ## 🐛 Troubleshooting
 
 ### Device not found
+
 - Check USB cable connection
 - Try a different USB port
 - Verify CIRCUITPY drive is visible
 - Check that CircuitPython is installed correctly
 
 ### Serial port not detected
+
 - **Windows**: Check Device Manager for COM port
 - **macOS/Linux**: Run `ls /dev/tty*` to list ports
 - Try unplugging and replugging the device
 - Use `--port` argument to specify manually
 
 ### NeoPixels not lighting up
+
 - Check that `neopixel` library is installed (built into CircuitPython)
 - Verify brightness setting in code
 - Try adjusting `brightness=0.3` value (0.0-1.0)
 
 ### Commands not working
+
 - Verify serial connection is established
 - Check that you're using the correct port
 - Try restarting the device (unplug/replug)

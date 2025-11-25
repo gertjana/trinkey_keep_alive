@@ -4,6 +4,7 @@
 import time
 import board
 import neopixel
+import touchio
 import usb_cdc
 import usb_hid
 from adafruit_hid.keyboard import Keyboard
@@ -15,12 +16,18 @@ import random
 pixels = neopixel.NeoPixel(board.NEOPIXEL, 4, brightness=0.3, auto_write=False)
 kbd = Keyboard(usb_hid.devices)
 mouse = Mouse(usb_hid.devices)
+touch1 = touchio.TouchIn(board.TOUCH1)
+touch2 = touchio.TouchIn(board.TOUCH2)
 
 # Status
 active = False
 quiet_mode = False  # When True, disable all LED actions
 last_action_time = time.monotonic()
 ACTION_INTERVAL = 30  # seconds between actions
+
+# Touch button debouncing
+touch1_pressed = False
+touch2_pressed = False
 
 # Colors
 COLOR_OFF = (0, 0, 0)
@@ -42,6 +49,18 @@ def flash_status(color, duration=0.1):
         time.sleep(duration)
         set_status(COLOR_ACTIVE if active else COLOR_IDLE)
 
+def running_light_animation():
+    """Circular running light animation around the 4 pixels"""
+    if not quiet_mode:
+        # Quick circular animation
+        for i in range(4):
+            pixels.fill(COLOR_OFF)
+            pixels[i] = COLOR_ACTION
+            pixels.show()
+            time.sleep(0.05)
+        # Restore status
+        set_status(COLOR_ACTIVE if active else COLOR_IDLE)
+
 def keep_awake_action():
     """Perform a random keep-awake action"""
     action = random.randint(0, 2)
@@ -61,7 +80,7 @@ def keep_awake_action():
         time.sleep(0.05)
         mouse.move(x=0, y=-1)
     
-    flash_status(COLOR_ACTION)
+    running_light_animation()
 
 def process_command(command):
     """Process commands from laptop"""
@@ -103,14 +122,45 @@ def process_command(command):
         except:
             usb_cdc.data.write(b'ERROR:INVALID_INTERVAL\n')
 
+def handle_touch_buttons():
+    """Handle touch button presses with debouncing"""
+    global active, quiet_mode, touch1_pressed, touch2_pressed
+    
+    # Touch 1: Toggle active on/off
+    if touch1.value:
+        if not touch1_pressed:
+            touch1_pressed = True
+            active = not active
+            set_status(COLOR_ACTIVE if active else COLOR_IDLE)
+            flash_status(COLOR_ACTION if active else COLOR_OFF, 0.2)
+    else:
+        touch1_pressed = False
+    
+    # Touch 2: Toggle quiet mode
+    if touch2.value:
+        if not touch2_pressed:
+            touch2_pressed = True
+            quiet_mode = not quiet_mode
+            if quiet_mode:
+                pixels.fill(COLOR_OFF)
+                pixels.show()
+            else:
+                set_status(COLOR_ACTIVE if active else COLOR_IDLE)
+    else:
+        touch2_pressed = False
+
 # Initial status
 set_status(COLOR_IDLE)
 
 print("Neo Trinkey Keep-Awake Device Ready")
 print("Commands: on, off, toggle, status, interval:30, quiet on, quiet off")
+print("Touch 1: Toggle On/Off | Touch 2: Toggle Quiet Mode")
 
 # Main loop
 while True:
+    # Handle touch button inputs
+    handle_touch_buttons()
+    
     # Check for commands from laptop
     if usb_cdc.data.in_waiting > 0:
         try:

@@ -1,27 +1,30 @@
-# Neo Trinkey Keep-Awake Device
-
-A USB device that prevents your laptop from going to sleep or showing a screensaver by simulating minimal user activity. Features NeoPixel status indicators and laptop control interface.
-
 ![Status: Active](https://img.shields.io/badge/status-active-brightgreen)
 ![Platform: CircuitPython](https://img.shields.io/badge/platform-CircuitPython-blueviolet)
 ![License: MIT](https://img.shields.io/badge/license-MIT-blue)
+
+# Neo Trinkey Keep-Awake Device
+
+A standalone USB device that prevents your laptop from going to sleep or showing a screensaver by simulating minimal user activity. Control it with capacitive touch buttons and visual NeoPixel feedback.
+
+![Neo Trinkey](/images/neo_trinky.jpg)
 
 ## 🌟 Features
 
 - 🎮 **Random keep-awake actions** (F15 key press or tiny mouse movements)
 - 💡 **Visual status indicators** using 4 NeoPixels
-- 🖥️ **Laptop control** via serial commands
-- ⚙️ **Configurable interval** (5-300 seconds)
-- 🔄 **Toggle on/off** remotely from your laptop
-- 📊 **Interactive monitor mode**
+- 🔄 **Toggle on/off** with Touch 1
+- 🤫 **Quiet mode** with Touch 2 (disables LEDs)
 
 ## 🎨 Status Colors
 
-| Color     | Status                              |
-| --------- | ----------------------------------- |
-| 🔵 Blue   | Idle/Ready (device off)             |
-| 🟢 Green  | Active (keeping laptop awake)       |
-| 🟡 Yellow | Action flash (key press/mouse move) |
+| Color     | Status                            |
+| --------- | --------------------------------- |
+| 🔵 Blue   | Idle/Ready (device off)           |
+| 🟢 Green  | Active (keeping laptop awake)     |
+| 🟡 Yellow | Action flash (circular animation) |
+| 🟠 Orange | Quiet mode enabled indicator      |
+
+**Note:** Status LEDs automatically turn off after 2 seconds to reduce brightness/distraction.
 
 ## 📋 Hardware Requirements
 
@@ -31,19 +34,10 @@ A USB device that prevents your laptop from going to sleep or showing a screensa
 
 ## 🛠️ Software Requirements
 
-### Neo Trinkey
-
 - CircuitPython 8.0 or newer
 - Adafruit HID library
 
-### Laptop
-
-- Python 3.7+
-- pyserial library
-
 ## 📦 Installation
-
-### 1. Set Up the Neo Trinkey
 
 1. **Install CircuitPython** on your Neo Trinkey:
 
@@ -59,112 +53,52 @@ A USB device that prevents your laptop from going to sleep or showing a screensa
 
 3. **Upload the device code**:
 
-   - Copy `trinkey/code.py` to the root of the CIRCUITPY drive
+   - Copy both `trinky/boot.py` and `trinky/code.py` to the root of the CIRCUITPY drive
+   - **Unplug and replug the Trinkey**
    - The device will automatically restart
 
 4. **Verify installation**:
-   - NeoPixels should light up blue (idle state)
+   - NeoPixels should light up blue for 2 seconds (idle state)
+   - No red flashing (red = error)
    - Device is ready!
-
-### 2. Set Up Laptop Controller
-
-1. **Install Python dependencies**:
-
-```bash
-pip install pyserial
-```
-
-2. **Run the controller**:
-
-```bash
-cd laptop
-python controller.py monitor
-```
 
 ## 🚀 Usage
 
-### Quick Commands
+### Touch Button Controls
 
-```bash
-# Turn on keep-awake
-python controller.py on
+- **Touch 1** (Left pad): Toggle keep-awake on/off
 
-# Turn off keep-awake
-python controller.py off
+  - Magenta flash when pressed
+  - Green = Active, Blue = Idle (shows for 2 seconds)
+  - First action happens 10 seconds after activation
 
-# Toggle on/off
-python controller.py toggle
+- **Touch 2** (Right pad): Toggle quiet mode
+  - Orange flash when pressed
+  - In quiet mode, all LEDs stay off (except action animations if not in quiet mode)
 
-# Check current status
-python controller.py status
+### How It Works
 
-# Set interval to 60 seconds
-python controller.py interval 60
-
-# Disable LED actions (quiet mode)
-python controller.py quiet on
-
-# Enable LED actions
-python controller.py quiet off
-
-# Interactive monitor mode
-python controller.py monitor
-```
-
-### Monitor Mode (Recommended)
-
-Run the interactive monitor for easy control:
-
-```bash
-python controller.py monitor
-```
-
-**Monitor Commands:**
-
-- `on` or `1` - Activate keep-awake
-- `off` or `0` - Deactivate keep-awake
-- `toggle` or `t` - Toggle state
-- `status` or `s` - Check current status
-- `i <seconds>` - Set interval (e.g., `i 45`)
-- `qon` - Enable quiet mode (disable all LED actions)
-- `qoff` - Disable quiet mode (enable LED actions)
-- `quit` or `q` - Exit monitor
-
-### Manual Port Selection
-
-If auto-detection doesn't work:
-
-```bash
-# Windows
-python controller.py --port COM3 monitor
-
-# macOS/Linux
-python controller.py --port /dev/ttyACM0 monitor
-```
+1. Plug the Trinkey into your laptop's USB port
+2. Touch the left pad (Touch 1) to activate - you'll see a magenta flash, then green for 2 seconds
+3. After 10 seconds, the first keep-awake action occurs (circular yellow animation)
+4. Actions repeat every 30 seconds while active
+5. Touch left pad again to deactivate
+6. Touch right pad (Touch 2) anytime to toggle quiet mode (disable LED animations)
 
 ## 🔧 Configuration
 
 ### Quiet Mode
 
-Quiet mode disables all LED actions while keeping the keep-awake functionality fully operational. This is useful when:
+Touch the right pad (Touch 2) to toggle quiet mode on/off:
+
+- **Quiet mode ON**: All LED animations disabled (device still works, just no lights)
+- **Quiet mode OFF**: LEDs show status and animations
+
+Useful when:
 
 - You want the device to work silently without visual distractions
 - Using the device in a dark environment
 - Conserving power or reducing LED wear
-
-Enable quiet mode:
-
-```bash
-python controller.py quiet on
-```
-
-Disable quiet mode:
-
-```bash
-python controller.py quiet off
-```
-
-In quiet mode, all LEDs will turn off and remain off, but the device continues to prevent your laptop from sleeping.
 
 ### Changing Default Settings
 
@@ -172,11 +106,16 @@ Edit `trinkey/code.py`:
 
 ```python
 ACTION_INTERVAL = 30  # Seconds between actions (default: 30)
+STATUS_LED_TIMEOUT = 2  # Seconds to show status LEDs (default: 2)
 
 # Change status colors
 COLOR_IDLE = (0, 0, 255)    # Blue
 COLOR_ACTIVE = (0, 255, 0)  # Green
 COLOR_ACTION = (255, 255, 0) # Yellow
+
+# Change touch button feedback colors
+(255, 0, 255)   # Magenta for Touch 1
+(255, 128, 0)   # Orange for Touch 2
 ```
 
 ### Keep-Awake Actions
@@ -187,51 +126,53 @@ The device randomly performs one of these actions:
 2. Move mouse 1 pixel right and back
 3. Move mouse 1 pixel down and back
 
-You can modify the `keep_awake_action()` function to customize behavior.
+Each action triggers a circular yellow LED animation around the 4 NeoPixels.
+
+You can modify the `keep_awake_action()` function in `code.py` to customize behavior.
 
 ## 📁 Project Structure
 
 ```
-neo-trinkey-keepawake/
-├── README.md              # This file
-├── LICENSE                # MIT License
-├── .gitignore             # Git ignore patterns
-├── trinkey/              # Neo Trinkey CircuitPython code
-│   └── code.py           # Main device code
-├── laptop/               # Laptop controller
-│   └── controller.py     # Python control script
-└── docs/                 # Additional documentation
+trinky_keep_alive/
+├── README.md                 # This file
+├── LICENSE                   # MIT License
+├── .gitignore               # Git ignore patterns
+├── .pre-commit-config.yaml  # Code quality checks
+├── trinky/                  # Neo Trinkey CircuitPython code
+│   ├── boot.py             # Boot configuration
+│   └── code.py             # Main device code
+└── docs/                    # Additional documentation
     └── TROUBLESHOOTING.md
 ```
 
 ## 🐛 Troubleshooting
 
-### Device not found
+### Red flashing LEDs
+
+- Indicates an error in the code
+- Enter safe mode (unplug/replug during yellow boot pulse)
+- Check that `adafruit_hid` library is in `CIRCUITPY/lib/`
+- Verify `code.py` and `boot.py` were copied correctly
+
+### Device not responding
 
 - Check USB cable connection
 - Try a different USB port
 - Verify CIRCUITPY drive is visible
-- Check that CircuitPython is installed correctly
+- Unplug and replug the device
 
-### Serial port not detected
+### Touch buttons not working
 
-- **Windows**: Check Device Manager for COM port
-- **macOS/Linux**: Run `ls /dev/tty*` to list ports
-- Try unplugging and replugging the device
-- Use `--port` argument to specify manually
+- Make sure you're touching the capacitive pads (metallic areas)
+- Touch with bare skin (won't work through gloves)
+- Clean the touch pads if dirty
+- The device must be fully booted (no red/yellow flashing)
 
-### NeoPixels not lighting up
+### LEDs too bright or always off
 
-- Check that `neopixel` library is installed (built into CircuitPython)
-- Verify brightness setting in code
-- Try adjusting `brightness=0.3` value (0.0-1.0)
-
-### Commands not working
-
-- Verify serial connection is established
-- Check that you're using the correct port
-- Try restarting the device (unplug/replug)
-- Check for typos in commands
+- Edit `brightness=0.3` in code.py (range 0.0-1.0)
+- Check if quiet mode is enabled (toggle with Touch 2)
+- Verify `STATUS_LED_TIMEOUT` setting in code.py
 
 ## 🤝 Contributing
 

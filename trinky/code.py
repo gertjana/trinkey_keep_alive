@@ -16,10 +16,13 @@ touch2 = touchio.TouchIn(board.TOUCH2)
 
 active = False
 quiet_mode = False
+
 last_action_time = time.monotonic()
-ACTION_INTERVAL = 30
 last_status_change = time.monotonic()
-STATUS_LED_TIMEOUT = 2 
+
+ACTION_INTERVAL = 30
+ACTION_OFFSET = 5
+STATUS_LED_TIMEOUT = 2
 
 touch1_pressed = False
 touch2_pressed = False
@@ -78,7 +81,7 @@ def handle_touch_buttons():
             touch1_pressed = True
             active = not active
             if active:
-                last_action_time = time.monotonic() - ACTION_INTERVAL + 10  # First action in 10 seconds
+                last_action_time = time.monotonic() - ACTION_INTERVAL + ACTION_OFFSET 
             set_status(COLOR_ACTIVE if active else COLOR_IDLE)
     else:
         touch1_pressed = False

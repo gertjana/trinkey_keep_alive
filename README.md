@@ -46,8 +46,8 @@ A standalone USB device that prevents your laptop from going to sleep or showing
 3. **Upload the device code**:
 
    - Copy both `trinky/boot.py` and `trinky/code.py` to the root of the CIRCUITPY drive
-   - **Unplug and replug the Trinkey**
    - The device will automatically restart
+   - if not, un and re-plug the device
 
 4. **Verify installation**:
    - NeoPixels should light up blue for 2 seconds (idle state)

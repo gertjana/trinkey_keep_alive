@@ -94,7 +94,7 @@ COLOR_ACTIVE = (0, 255, 0)  # Green
 COLOR_ACTION = (255, 255, 0) # Yellow
 
 # Change touch button feedback colors
-(255, 128, 0)   # Orange for Touch 2
+COLOR_TOGGLE_QUIET = (255, 128, 0)   # Orange for Touch 2
 ```
 
 ### Keep-Awake Actions

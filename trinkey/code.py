@@ -31,6 +31,7 @@ COLOR_OFF = (0, 0, 0)
 COLOR_ACTIVE = (0, 255, 0)
 COLOR_IDLE = (0, 0, 255)
 COLOR_ACTION = (255, 255, 0)
+COLOR_TOGGLE_QUIET = (255, 128, 0)
 
 def set_status(color):
     global last_status_change
@@ -92,14 +93,14 @@ def handle_touch_buttons():
             quiet_mode = not quiet_mode
             if quiet_mode:
                 # Brief flash before going quiet
-                pixels.fill((255, 128, 0))  # Orange flash for touch 2
+                pixels.fill(COLOR_TOGGLE_QUIET)  # Orange flash for touch 2
                 pixels.show()
                 time.sleep(0.1)
                 pixels.fill(COLOR_OFF)
                 pixels.show()
             else:
                 # Brief flash when enabling LEDs
-                pixels.fill((255, 128, 0))  # Orange flash for touch 2
+                pixels.fill(COLOR_TOGGLE_QUIET)  # Orange flash for touch 2
                 pixels.show()
                 time.sleep(0.1)
                 set_status(COLOR_ACTIVE if active else COLOR_IDLE)

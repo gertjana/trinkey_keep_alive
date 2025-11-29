@@ -71,7 +71,7 @@ A standalone USB device that prevents your laptop from going to sleep or showing
 ### How It Works
 
 1. Plug the Trinkey into your laptop's USB port
-2. Touch the left pad (Touch 1) to activate - you'll see the leds go green for 2 seconds
+2. Touch the left pad (Touch 1) to activate - you'll see the LEDs go green for 2 seconds
 3. After 5 seconds, the first keep-awake action occurs (circular yellow animation)
 4. Actions repeat every 30 seconds while active
 5. Touch left pad again to deactivate

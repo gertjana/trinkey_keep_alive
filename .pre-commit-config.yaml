@@ -9,41 +9,13 @@ repos:
     rev: v4.5.0
     hooks:
       - id: trailing-whitespace
-        exclude: ^trinky/
       - id: end-of-file-fixer
-        exclude: ^trinky/
       - id: check-yaml
       - id: check-added-large-files
         args: ["--maxkb=1000"]
       - id: check-merge-conflict
-      - id: check-toml
       - id: mixed-line-ending
         args: ["--fix=lf"]
-        exclude: ^trinky/
-
-  # Python code formatting
-  - repo: https://github.com/psf/black
-    rev: 23.12.1
-    hooks:
-      - id: black
-        language_version: python3
-        files: ^laptop/.*\.py$
-
-  # Python import sorting
-  - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
-    hooks:
-      - id: isort
-        args: ["--profile", "black"]
-        files: ^laptop/.*\.py$
-
-  # Python linting
-  - repo: https://github.com/pycqa/flake8
-    rev: 7.0.0
-    hooks:
-      - id: flake8
-        args: ["--max-line-length=100", "--extend-ignore=E203,W503"]
-        files: ^laptop/.*\.py$
 
   # Markdown formatting
   - repo: https://github.com/pre-commit/mirrors-prettier
@@ -51,6 +23,3 @@ repos:
     hooks:
       - id: prettier
         types_or: [markdown, yaml]
-        exclude: ^trinky/
-# Note: CircuitPython code in trinky/ is excluded from most checks
-# as it has different syntax requirements and constraints

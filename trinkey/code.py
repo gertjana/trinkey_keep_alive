@@ -58,7 +58,7 @@ def running_light_animation():
 
 def keep_awake_action():
     action = random.randint(0, 2)
-    
+
     if action == 0:
         kbd.press(Keycode.F15)
         kbd.release_all()
@@ -70,22 +70,22 @@ def keep_awake_action():
         mouse.move(x=0, y=1)
         time.sleep(0.05)
         mouse.move(x=0, y=-1)
-    
+
     running_light_animation()
 
 def handle_touch_buttons():
     global active, quiet_mode, touch1_pressed, touch2_pressed, last_action_time
-    
+
     if touch1.value:
         if not touch1_pressed:
             touch1_pressed = True
             active = not active
             if active:
-                last_action_time = time.monotonic() - ACTION_INTERVAL + ACTION_OFFSET 
+                last_action_time = time.monotonic() - ACTION_INTERVAL + ACTION_OFFSET
             set_status(COLOR_ACTIVE if active else COLOR_IDLE)
     else:
         touch1_pressed = False
-    
+
     if touch2.value:
         if not touch2_pressed:
             touch2_pressed = True
@@ -114,7 +114,7 @@ print("Touch 1: Toggle On/Off | Touch 2: Toggle Quiet Mode")
 # Main loop
 while True:
     handle_touch_buttons()
-    
+
     # Turn off status LEDs after timeout
     if not quiet_mode:
         current_time = time.monotonic()
@@ -122,12 +122,12 @@ while True:
             if pixels[0] != COLOR_OFF:  # Only update if not already off
                 pixels.fill(COLOR_OFF)
                 pixels.show()
-    
+
     # Perform keep-awake action if active
     if active:
         current_time = time.monotonic()
         if current_time - last_action_time >= ACTION_INTERVAL:
             keep_awake_action()
             last_action_time = current_time
-    
+
     time.sleep(0.1)

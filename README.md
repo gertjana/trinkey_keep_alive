@@ -45,7 +45,7 @@ A standalone USB device that prevents your laptop from going to sleep or showing
 
 3. **Upload the device code**:
 
-   - Copy both `trinky/boot.py` and `trinky/code.py` to the root of the CIRCUITPY drive
+   - Copy `trinkey/code.py` to the root of the CIRCUITPY drive
    - The device will automatically restart
    - If not, un and re-plug the device
 
@@ -110,12 +110,6 @@ Each action triggers a circular yellow LED animation around the 4 NeoPixels.
 ## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- [Adafruit](https://www.adafruit.com/) for the Neo Trinkey hardware
-- CircuitPython community for excellent documentation
-- Coffee ☕ for keeping me awake while coding this
 
 ## 📧 Contact
 
